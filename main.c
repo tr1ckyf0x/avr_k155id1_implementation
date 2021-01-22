@@ -16,7 +16,7 @@
 #define PWM_CONTROL_REGISTER_B TCCR0B
 #define PWM_COMPARE_REGISTER OCR0A
 
-#define PWM_DUTY_CYCLE 228
+#define PWM_DUTY_CYCLE 0
 
 // Decoder Configuratuon
 #define DECODER_OUTPUTS_COUT 10
@@ -116,7 +116,7 @@ static inline void setup_pwm() {
 
     // SETUP PWM Timer
     // Set PWM Mode
-    PWM_CONTROL_REGISTER_A |= 1 << WGM00 | 1 << WGM01 | 1 << COM0A1;
+    PWM_CONTROL_REGISTER_A |= 1 << WGM01 | 1 << COM0A0;
 
     // PWM Freq. calculated by
     // F = Fclk_I/O / (N * 256)
