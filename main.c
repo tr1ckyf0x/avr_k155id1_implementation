@@ -3,7 +3,6 @@
  */
 
 #include <avr/io.h>
-#include <inttypes.h>
 #include <util/delay.h>
 
 // PWM Configuration
@@ -82,33 +81,47 @@
 #define CLEAR_BIT(port, bit) (port &= ~(1 << bit))
 #define SET_BIT(port, bit) (port |= 1 << bit)
 
-static unsigned char decoder_input_value;
+static uint8_t decoder_input_value;
 
-static volatile unsigned char *decoder_y_ports[] = {
-                                            &DECODER_Y0_PORT,
-                                            &DECODER_Y1_PORT,
-                                            &DECODER_Y2_PORT,
-                                            &DECODER_Y3_PORT,
-                                            &DECODER_Y4_PORT,
-                                            &DECODER_Y5_PORT,
-                                            &DECODER_Y6_PORT,
-                                            &DECODER_Y7_PORT,
-                                            &DECODER_Y8_PORT,
-                                            &DECODER_Y9_PORT
-                                        };
+static volatile uint8_t *decoder_x_pins[] = {
+    &DECODER_X0_PIN,
+    &DECODER_X1_PIN,
+    &DECODER_X2_PIN,
+    &DECODER_X3_PIN
+};
 
-static unsigned char decoder_y_port_bits[] = {
-                                                DECODER_Y0_PORT_BIT,
-                                                DECODER_Y1_PORT_BIT,
-                                                DECODER_Y2_PORT_BIT,
-                                                DECODER_Y3_PORT_BIT,
-                                                DECODER_Y4_PORT_BIT,
-                                                DECODER_Y5_PORT_BIT,
-                                                DECODER_Y6_PORT_BIT,
-                                                DECODER_Y7_PORT_BIT,
-                                                DECODER_Y8_PORT_BIT,
-                                                DECODER_Y9_PORT_BIT
-                                            };
+static uint8_t decoder_x_pin_bits[] = {
+    DECODER_X0_PIN_BIT,
+    DECODER_X1_PIN_BIT,
+    DECODER_X2_PIN_BIT,
+    DECODER_X3_PIN_BIT
+};
+
+static volatile uint8_t *decoder_y_ports[] = {
+    &DECODER_Y0_PORT,
+    &DECODER_Y1_PORT,
+    &DECODER_Y2_PORT,
+    &DECODER_Y3_PORT,
+    &DECODER_Y4_PORT,
+    &DECODER_Y5_PORT,
+    &DECODER_Y6_PORT,
+    &DECODER_Y7_PORT,
+    &DECODER_Y8_PORT,
+    &DECODER_Y9_PORT
+};
+
+static uint8_t decoder_y_port_bits[] = {
+    DECODER_Y0_PORT_BIT,
+    DECODER_Y1_PORT_BIT,
+    DECODER_Y2_PORT_BIT,
+    DECODER_Y3_PORT_BIT,
+    DECODER_Y4_PORT_BIT,
+    DECODER_Y5_PORT_BIT,
+    DECODER_Y6_PORT_BIT,
+    DECODER_Y7_PORT_BIT,
+    DECODER_Y8_PORT_BIT,
+    DECODER_Y9_PORT_BIT
+};
 
 static inline void setup_pwm() {
     // Setup PWM Pin
@@ -146,10 +159,10 @@ static inline void setup_decoder_pins() {
 
 static inline void read_decoder_input_value() {
     decoder_input_value = 0;
-    decoder_input_value |= ((DECODER_X0_PIN & (1 << DECODER_X0_PIN_BIT)) >> DECODER_X0_PIN_BIT) << 0;
-    decoder_input_value |= ((DECODER_X1_PIN & (1 << DECODER_X1_PIN_BIT)) >> DECODER_X1_PIN_BIT) << 1;
-    decoder_input_value |= ((DECODER_X2_PIN & (1 << DECODER_X2_PIN_BIT)) >> DECODER_X2_PIN_BIT) << 2;
-    decoder_input_value |= ((DECODER_X3_PIN & (1 << DECODER_X3_PIN_BIT)) >> DECODER_X3_PIN_BIT) << 3;
+    unsigned short array_length = sizeof(decoder_x_pin_bits) / sizeof(decoder_x_pin_bits[0]);
+    for (unsigned short i = 0; i < array_length; ++i) {
+        decoder_input_value |= ((*decoder_x_pins[i] >> decoder_x_pin_bits[i]) & 1) << i;
+    }
 }
 
 static inline void set_decoder_output_pins() {
